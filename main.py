@@ -9,8 +9,6 @@ import secrets
 
 # This code was written by github.com/NiklasWyld
 
-my_secret = os.environ['token']
-
 intents = discord.Intents.all()
 client = discord.Client()
 client = commands.Bot(command_prefix='$', intents=intents)
@@ -490,45 +488,7 @@ async def shutdown(ctx):
                            "Das kann einige Minuten beanspruchen...")
     await ctx.bot.logout()
     print(str(ctx.author) + " hat Bot beendet")
-
-
-#admin-login-logout
-
-
-list = '586193546017505281 677935302190432287'
-nutzer = 'Fuchs.Bene Wild.Niklas'
-kennung = '!AdminImmerzock?loginservice Wild2020'
-
-
-@client.command()
-async def login(ctx):
-  if ctx.channel.id == 877238528994582598:
-      if f"{ctx.author.id}" in list:
-            await ctx.send("Wird eingeloggt...")
-            Rolle = discord.utils.get(ctx.message.author.guild.roles, name="Admin")
-            await ctx.author.add_roles(Rolle)
-            await ctx.send("Eingeloggt! Bitte logge dich später wieder aus mit '$logout'")
-            await asyncio.sleep(10)
-            await ctx.channel.purge(limit=3)
-      if f"{ctx.author.id}" not in list:
-          await ctx.send("Ungültiger Login!")
-  if not ctx.channel.id == 877238528994582598:
-      return
-
-
-@client.command()
-async def logout(ctx):
-    if ctx.channel.id == 877238528994582598:
-        if f"{ctx.author.id}" in list:
-            await ctx.send("Wird ausgeloggt...")
-            Rolle = discord.utils.get(ctx.message.author.guild.roles, name="Admin")
-            await ctx.author.remove_roles(Rolle)
-            await ctx.send("Ausgeloggt! Du kannst dich später wieder einloggen mit '$login'")
-        if f"{ctx.author.id}" not in list:
-            await ctx.send("Ungültiger Logout!")
-    if not ctx.channel.id == 877238528994582598:
-        return
-
+    
 
 #Status
 
@@ -547,4 +507,4 @@ async def status_task():
         await asyncio.sleep(10)
 
 
-client.run(my_secret)
+client.run(TOKEN)
