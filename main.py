@@ -147,69 +147,6 @@ async def spiel(ctx):
     return
 
 
-@client.listen('on_message')
-async def on_message(message):
-    if message.channel.id == 842091120276275232:
-        if message.content.startswith("$spiel"):
-            await message.channel.send("Das spiel startet jetzt!")
-            await message.channel.send("Du musst immer mit **game: (Argument)** antworten!")
-            await asyncio.sleep(1)
-            await message.channel.send("Junge oder Mädchen")
-            print(str(message.author) + " hat Spiel-Befehl ausgeführt")
-        if message.content.startswith("game: Junge"):
-            await message.channel.send("Tanzen\r\n"
-                                       "Spielen\r\n"
-                                       "Küssen\r\n"
-                                       "Liebesbrief schreiben")
-        if message.content.startswith("game: Mädchen"):
-            await message.channel.send("Tanzen\r\n"
-                                       "Spielen\r\n"
-                                       "Küssen\r\n"
-                                       "Liebesbrief schreiben")
-        if message.content.startswith("game: Tanzen"):
-            await message.channel.send("J=Junge M=Mädchen\r\n"
-                                       "1-7(J)oder(M)")
-        if message.content.startswith("game: Spielen"):
-            await message.channel.send("J=Junge M=Mädchen\r\n"
-                                       "1-7(J)oder(M)")
-        if message.content.startswith("game: Küssen"):
-            await message.channel.send("J=Junge M=Mädchen\r\n"
-                                       "1-7(J)oder(M)")
-        if message.content.startswith("game: Liebesbrief schreiben"):
-            await message.channel.send("J=Junge M=Mädchen\r\n"
-                                       "1-7(J)oder(M)")
-        if message.content.startswith("game: 1(J)"):
-            await message.channel.send("Benedikt")
-        if message.content.startswith("game: 2(J)"):
-            await message.channel.send("Niklas")
-        if message.content.startswith("game: 3(J)"):
-            await message.channel.send("Sebastian")
-        if message.content.startswith("game: 4(J)"):
-            await message.channel.send("Kai")
-        if message.content.startswith("game: 5(J)"):
-            await message.channel.send("Dein Vada")
-        if message.content.startswith("game: 6(J)"):
-            await message.channel.send("Johannes")
-        if message.content.startswith("game: 7(J)"):
-            await message.channel.send("Herr Felli")
-        if message.content.startswith("game: 1(M)"):
-            await message.channel.send("Albina")
-        if message.content.startswith("game: 2(M)"):
-            await message.channel.send("Deine Mudda")
-        if message.content.startswith("game: 3(M)"):
-            await message.channel.send("Annika")
-        if message.content.startswith("game: 4(M)"):
-            await message.channel.send("Hanna")
-        if message.content.startswith("game: 5(M)"):
-            await message.channel.send("Annika Fink")
-        if message.content.startswith("game: 6(M)"):
-            await message.channel.send("Frau Rothammi")
-        if message.content.startswith("game: 7(M)"):
-            await message.channel.send("Frau Magrafi")
-    if not message.channel.id == 842091120276275232:
-        return
-
-
 #Game(Ende)
 
 
@@ -370,49 +307,6 @@ async def getid(ctx):
 async def botverify(ctx):
     await ctx.channel.send(
         "Gib **$Verifizierung** in den Chat ein, und befolge die folgenden Anweisungen um Zugriff auf den Server zu erhalten!")
-
-
-# Verifizierung
-
-
-@client.listen('on_message')
-async def on_message(message):
-    if message.author.bot:
-        return
-    if message.channel.id == 876772133437603886:
-        if not message.content.startswith("$Verifizierung"):
-            await message.channel.purge(limit=1)
-        if message.content.startswith("$Verifizierung"):
-            await asyncio.sleep(5)
-            await message.channel.purge(limit=1)
-
-
-@client.command()
-async def Verifizierung(ctx, member: discord.Member = None):
-    if not ctx.channel.id == 876772133437603886:
-        return
-    if ctx.channel.id == 876772133437603886:
-        member = member if member else ctx.author
-    welcome_channel_id = 876772133437603886
-    welcome_channel = client.get_channel(welcome_channel_id)
-    msg = await welcome_channel.send(embed=discord.Embed(title="Verifizierung",
-                                                         description=f"{member.mention} Reagiere auf diese Nachricht mit einen Daumen nach oben! Somit bekommst du Zugriff auf den Server.",
-                                                         color=discord.Color.red()))
-    await msg.add_reaction('👍')
-
-    def _check(r, u):
-        return str(r.emoji) == '👍' and r.message == msg and u == member
-
-    try:
-        r, u = await client.wait_for('reaction_add', check=_check, timeout=60)
-        role = discord.utils.get(ctx.guild.roles, name="Community")
-        await u.add_roles(role, reason="Verifizierung")
-        await msg.delete()
-        print(str(ctx.author) + " hat sich verifiziert!")
-    except asyncio.TimeoutError:
-        await msg.edit(embed=discord.Embed(title="⛔Verifizierung abgebrochen⛔",
-                                           description=f"{member.mention} Deine Antwort hat zu lange gedauert versuche es nitte erneut.",
-                                           color=discord.Color.red()), delete_after=60)
 
 
 #Gamemode
