@@ -7,20 +7,41 @@ import os
 import string
 import secrets
 
-# This code was written by github.com/NiklasWyld
+"""
+Code by github.com/NiklasWyld
+
+NiklasWyld/ImmerzockBot is licensed under the
+
+GNU General Public License v3.0
+
+✅ Commercial use
+✅ Modification
+✅ Distribution
+✅ Patent use
+✅ Private use
+----------------------
+❌ Liability
+❌ Warranty
+
+The complete code is written in German. Also how the Discord Bot is based on German.
+
+Comments are in English though
+
+Immerzock Bot is based on the Discord Libery 'discord.py'.
+"""
 
 intents = discord.Intents.all()
-client = discord.Client()
 client = commands.Bot(command_prefix='$', intents=intents)
 client.remove_command('help')
 client.remove_command('game:')
 
+# Method 'is_not_pinned' to return a true or false bool. For use in '$clear' command
 
 def is_not_pinned(mess):
     return not mess.pinned
 
 
-#MusikBot
+#Music Bot
 
 
 @client.command()
@@ -109,9 +130,9 @@ async def stop(ctx):
     voice.stop()
 
 
-#Befehle
+# Commands
 
-
+# Help Command with all features and methods
 @client.command()
 async def help(ctx, member: discord.Member = None):
     embed = discord.Embed(title="Hilfe-Menü", description="Help-Menu von Immerzock-Bot", color=0x00ff00)
@@ -119,7 +140,6 @@ async def help(ctx, member: discord.Member = None):
     embed.add_field(name="Datum", value="$datum - Zeigt das Datum", inline=False)
     embed.add_field(name="Uhrzeit", value="$uhrzeit - Zeigt die Uhrzeit", inline=False)
     embed.add_field(name="Help", value="$help - Dieser Befehl", inline=False)
-    embed.add_field(name="Bester-Rapper", value="$besterrapper - Zeigt besten Rapper", inline=False)
     embed.add_field(name="Komponenten", value="$komponenten - Zeigt Niklas`s Komponenten", inline=False)
     embed.add_field(name="Open-Source", value="$opensource - Zeigt Info zum Code des Bot´s", inline=False)
     embed.add_field(name="Username", value="$username - Zeigt deinen Username", inline=False)
@@ -139,16 +159,18 @@ async def help(ctx, member: discord.Member = None):
     print(str(ctx.author) + " hat Help-Befehl ausgeführt")
 
 
-#Game
+# Game
 
+# Disable error message of '$spiel' command on call 
 
 @client.command()
 async def spiel(ctx):
     return
 
 
-#Game(Ende)
+# Game (end)
 
+# Create random code with secrets and string package
 
 @client.command()
 async def code(ctx):
@@ -157,49 +179,28 @@ async def code(ctx):
     await ctx.send(''.join(secrets.choice(y) for i in range(x)))
 
 
+# Show the current time    
+    
 @client.command()
 async def uhrzeit(ctx):
     await ctx.channel.send(time.strftime("%H: %M: %S"))
     print(str(ctx.author) + "hat Uhrzeit-Befehl ausgeführt")
 
+# Show the current date
 
 @client.command()
 async def datum(ctx):
     await ctx.channel.send(time.strftime("%d. %m. %y"))
     print(str(ctx.author) + " hat Datum-Befehl ausgeführt")
 
-
-@client.command()
-async def besterrapper(ctx):
-    await ctx.channel.send("Natürlich Peep!!!")
-    print(str(ctx.author) + " hat Bester-Rapper-Befehl ausgeführt")
-
+# Components of owner 'NiklasWyld / niklaspeter123'
 
 @client.command()
 async def komponenten(ctx, member: discord.Member = None):
-    embed = discord.Embed(title="Komponenten", description="Komponenten von Niklas", color=0x00ff00)
-    embed.add_field(name="Tastartur", value="https://www.mediamarkt.de/de/product/_razer-razer-ornata-v2-2668151.html",
-                    inline=False)
-    embed.add_field(name="Maus",
-                    value="https://www.expert.de/shop/unsere-produkte/gaming-freizeit/pc-gaming-zubehor/gaming-mause/17620013236-m65-rgb-elite-schwarz-gaming-maus.html",
-                    inline=False)
-    embed.add_field(name="Monitor-1",
-                    value="https://www.amazon.de/AOC-G2590VXQ-DisplayPort-Reaktionszeit-1920x1080/dp/B078S36XWV/ref=sr_1_1?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&dchild=1&keywords=AOC+2590G4&qid=1618155834&sr=8-1",
-                    inline=False)
-    embed.add_field(name="Monitor-2",
-                    value="https://www.expert.de/shop/unsere-produkte/computer-zubehor/monitore-beamer/monitore/17160011033-r240y-monitor.html?branch_id=2237090&adword=shopping_op&gclid=CjwKCAjwvMqDBhB8EiwA2iSmPLZ9JMVa83v3PHuPFvp36Vddpp1uowm8HHS7gIAtAgESqozYFrA5nxoCtEEQAvD_BwE",
-                    inline=False)
-    embed.add_field(name="Stream Deck Mini",
-                    value="https://www.amazon.de/Elgato-Stream-Deck-personaliserbaren-einstellbaren/dp/B07DYRS1WH/ref=sr_1_2_sspa?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=32ENOGQ9W9LES&dchild=1&keywords=streamdeck&qid=1618155919&sprefix=strea%2Caps%2C199&sr=8-2-spons&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUEzN0wyM0JYMFoyWFEwJmVuY3J5cHRlZElkPUEwOTAzMjg0M1VVODUxNUxZMEtLViZlbmNyeXB0ZWRBZElkPUEwNTIxMDM0MjRUSU1OTllLUTVXVyZ3aWRnZXROYW1lPXNwX2F0ZiZhY3Rpb249Y2xpY2tSZWRpcmVjdCZkb05vdExvZ0NsaWNrPXRydWU&th=1",
-                    inline=False)
-    embed.add_field(name="Mikrofon",
-                    value="https://www.expert.de/shop/unsere-produkte/gaming-freizeit/pc-gaming-zubehor/sonstiges-gaming-zubehor/17670019410-gaming-mikrofon-stream-400-plus.html",
-                    inline=False)
-    mess = await ctx.channel.send(embed=embed)
-    await mess.add_reaction("👍")
-    print(str(ctx.author) + " hat Komponenten-Befehl ausgeführt")
+    # Command disabled
+    return await ctx.send('Error')
 
-#Join-Message
+# Join-Message on 'on_member_join' event
 
 
 @client.event
@@ -208,18 +209,23 @@ async def on_member_join(member):
     print(f"{member.name} ist auf {member.guild} gejoint")
 
 
-#Andere Befehle
+# Another commands
 
 
 @client.command()
 async def weristonline(ctx):
-  ctx.channel.send(f"Dieser Befehl ist zur Zeit nicht verfügbar. Versuch es später nochmal {ctx.author.mention}")
+  # Command is not online resp. not developed
+  await ctx.channel.send(f"Dieser Befehl ist zur Zeit nicht verfügbar. Versuch es später nochmal {ctx.author.mention}")
 
 
+# Creates an invite link to invite the bot to a Discord server.    
+    
 @client.command()
 async def invite(ctx):
   await ctx.channel.send(f"https://discordapp.com/oauth2/authorize?&client_id=" + client.user.id + "&scope=bot&permissions=0")
 
+
+# Outputs the servers on which the bot is for the owner 
 
 @client.command()
 @commands.is_owner()
@@ -227,7 +233,8 @@ async def server(ctx):
     for guild in client.guilds:
         print(str(guild.name))
 
-
+# Kick Command
+        
 @commands.has_permissions(kick_members=True)
 @client.command()
 async def kick(ctx, user: discord.Member, *, reason="Keine Reason"):
@@ -238,7 +245,8 @@ async def kick(ctx, user: discord.Member, *, reason="Keine Reason"):
         await ctx.channel.send(embed=kick)
         await user.send(embed=kick)
 
-
+# Ban Command
+        
 @commands.has_permissions(ban_members=True)
 @client.command()
 async def ban(ctx, user: discord.Member, *, reason="Keine Reason"):
@@ -249,12 +257,14 @@ async def ban(ctx, user: discord.Member, *, reason="Keine Reason"):
         await ctx.channel.send(embed=ban)
         await user.send(embed=ban)
 
+# Command to test the bot
 
 @client.command()
 async def test(ctx):
     await ctx.channel.send("Test erfolgreich!")
     print(str(ctx.author) + " hat Test durchgeführt")
 
+# Sends the user name of the ctx.author
 
 @client.command()
 async def username(ctx):
