@@ -23,17 +23,12 @@ GNU General Public License v3.0
 ❌ Liability
 ❌ Warranty
 
-The complete code is written in German. Also how the Discord Bot is based on German.
-
-Comments are in English though
-
 Immerzock Bot is based on the Discord Libery 'discord.py'.
 """
 
 intents = discord.Intents.all()
-client = commands.Bot(command_prefix='$', intents=intents)
-client.remove_command('help')
-client.remove_command('game:')
+# Create a client with commands.Bot with parameters command_prefix, intents, help_command
+client = commands.Bot(command_prefix='$', intents=intents, help_command=None)
 
 # Method 'is_not_pinned' to return a true or false bool. For use in '$clear' command
 
@@ -42,25 +37,31 @@ def is_not_pinned(mess):
 
 # Music Bot
 
+# Play command with use of youtube_dl
+
 @client.command()
 async def play(ctx, url: str):
+    # Check if ctx.author is on a voice channel
     if not ctx.author.voice:
-        await ctx.author.send('Du musst in einen Sprach-Kanal für diesen Befehl sein!')
+        await ctx.author.send('You must be in a voice channel for this command!')
         return
+    # File management
     if os.path.isfile('song.mp3'):
         try:
             os.remove('song.mp3')
         except PermissionError:
-            await ctx.author.send('Warte bis der bereits spielende Song endet!')
+            await ctx.author.send('Wait for the already playing song to end!')
             return
-
+    
+    # Connect to channel
     voice_channel = ctx.author.voice.channel
     voice = ctx.channel.guild.voice_client
     if voice is None:
         voice = await voice_channel.connect()
     elif voice.channel != voice_channel:
         voice = await voice.move_to(voice_channel)
-
+    
+    # Download .mp3 file
     ydl_opts = {
         'format': 'bestaudio/best',
         'postprocessors': [{
@@ -74,47 +75,51 @@ async def play(ctx, url: str):
     [os.rename(file, 'song.mp3') for file in os.listdir('.') if file.endswith('.mp3')]
     if voice.is_playing:
         voice.stop()
+    # Play the file
     voice.play(discord.FFmpegPCMAudio('song.mp3'))
 
+# Join command    
+    
 @client.command()
 async def join(ctx):
     if not ctx.author.voice:
-        await ctx.author.send('Du bist in keinen Sprach-Kanal!')
+        await ctx.author.send('You are in no voice channel!')
         return
     voice_channel = ctx.author.voice.channel
     await voice_channel.connect()
-    await asyncio.sleep(300)
-    await ctx.author.send('Du hast zu lange nicht mit den Bot interargiert! Deshalb habe ich den Channel verlassen!')
-    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    if voice.is_connected():
-        await voice.disconnect()
-    else:
-        return
-
+    
+# Leave command
+    
 @client.command()
 async def leave(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_connected():
         await voice.disconnect()
     else:
-        await ctx.author.send('Der Bot ist in keinen Kanal!')
+        await ctx.author.send('The bot is not in any channel!')
 
+# Pause command        
+        
 @client.command()
 async def pause(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_playing():
         voice.pause()
     else:
-        await ctx.author.send('Zur Zeit spielt keine Musik!')
+        await ctx.author.send('There is no music playing at the moment!')
 
+# Resume command        
+        
 @client.command()
 async def resume(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_paused():
         voice.resume()
     else:
-        await ctx.author.send('Es wurde keine Musik pausiert!')
+        await ctx.author.send('No music was paused!')
 
+# Stop command        
+        
 @client.command()
 async def stop(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
@@ -123,43 +128,16 @@ async def stop(ctx):
 # Commands
 
 # Help Command with all features and methods
+# Attention, many commands have been removed
 
 @client.command()
 async def help(ctx, member: discord.Member = None):
-    embed = discord.Embed(title='Hilfe-Menü', description='Help-Menu von Immerzock-Bot', color=0x00ff00)
-    embed.add_field(name='Test', value='$test - Testet den Bot', inline=False)
-    embed.add_field(name='Datum', value='$datum - Zeigt das Datum', inline=False)
-    embed.add_field(name='Uhrzeit', value='$uhrzeit - Zeigt die Uhrzeit', inline=False)
-    embed.add_field(name='Help', value='$help - Dieser Befehl', inline=False)
-    embed.add_field(name='Komponenten', value='$komponenten - Zeigt Niklas`s Komponenten', inline=False)
-    embed.add_field(name='Open-Source', value='$opensource - Zeigt Info zum Code des Bot´s', inline=False)
-    embed.add_field(name='Username', value='$username - Zeigt deinen Username', inline=False)
-    embed.add_field(name='User-Info', value='$userinfo (User) - Zeigt Userinfo', inline=False)
-    embed.add_field(name='Clear', value='$clear (Zahl) - Löscht bestimmte Anzahl von Nachrichten **(ONLY ADMIN)**',
-                    inline=False)
-    embed.add_field(name='Email', value='$email - Zeigt eine Email-Adresse für Fragen', inline=False)
-    embed.add_field(name='Kick', value='$kick (Username) - Kickt den User **(ONLY ADMIN)**', inline=False)
-    embed.add_field(name='Ban', value='$ban (Username) - Bannt den User **(ONLY ADMIN)**', inline=False)
-    embed.add_field(name='Say', value='$say (Nachricht) - Wiederholt deine Nachricht', inline=False)
-    embed.add_field(name='Weristonline', value='$weristonline - Zeigt wer online ist', inline=False)
-    embed.add_field(name='Gamemode', value='$gamemode (1 - 0) - Wechselt den Gamemode', inline=False)
-    embed.add_field(name='MusikBot', value='**Zur Zeit ist der Musikbot außer Betrieb! Wir arbeiten mit hochtouren!**',
-                    inline=False)
+    embed = discord.Embed(title='Help menu', description='Help menu of Immerzock-Bot', color=0x00ff00)
+    embed.add_field(name='Test', value='$test - Test the bot', inline=False)
     embed.set_thumbnail(
-        url='https://cdn.discordapp.com/attachments/806062613716271144/849881814738927646/d04bff1caa1c75d82fd3d4e827cafc74.png')
+        url='url of any image')
     mess = await ctx.channel.send(embed=embed)
     await mess.add_reaction('👍')
-    print(str(ctx.author) + ' hat Help-Befehl ausgeführt')
-
-# Game
-
-# Disable error message of '$spiel' command on call 
-
-@client.command()
-async def spiel(ctx):
-    return
-
-# Game (end)
 
 # Create random code with secrets and string package
 
@@ -169,41 +147,39 @@ async def code(ctx):
     x = int(ctx.message.content.split(' ')[1])
     await ctx.send(''.join(secrets.choice(y) for i in range(x)))
 
-# Show the current time    
+# Sends the current time    
 
 @client.command()
-async def uhrzeit(ctx):
-    await ctx.channel.send(time.strftime('%H: %M: %S'))
-    print(str(ctx.author) + 'hat Uhrzeit-Befehl ausgeführt')
+async def time(ctx, amount: int = 1):
+    for i in range(amount):
+        await ctx.channel.send(time.strftime('%H: %M: %S'))
 
-# Show the current date
+# Sends the current date
 
 @client.command()
-async def datum(ctx):
+async def date(ctx):
     await ctx.channel.send(time.strftime('%d. %m. %y'))
-    print(str(ctx.author) + ' hat Datum-Befehl ausgeführt')
 
 # Components of owner 'NiklasWyld / niklaspeter123'
 
 @client.command()
-async def komponenten(ctx, member: discord.Member = None):
+async def components(ctx, member: discord.Member = None):
     # Command disabled
-    return await ctx.send('Error')
+    await ctx.send('Command disabled')
 
 # Join-Message on 'on_member_join' event
 
 @client.event
 async def on_member_join(member):
-    await member.send(f'Willkommen auf **{member.guild}**!')
-    print(f'{member.name} ist auf {member.guild} gejoint')
+    await member.send(f'Welcome to **{member.guild}**!')
 
 # Another commands
 
 @client.command()
-async def weristonline(ctx):
+async def whosonline(ctx):
     # Command is not online resp. not developed
     await ctx.channel.send(
-        f'Dieser Befehl ist zur Zeit nicht verfügbar. Versuch es später nochmal {ctx.author.mention}'
+        f'This command is currently unavailable. Try again later {ctx.author.mention}'
     )
 
 # Creates an invite link to invite the bot to a Discord server.    
@@ -214,21 +190,22 @@ async def invite(ctx):
         f'https://discordapp.com/oauth2/authorize?&client_id=' + client.user.id + '&scope=bot&permissions=0'
     )
 
-# Outputs the servers on which the bot is for the owner 
+# Outputs the servers on which the bot is
 
 @client.command()
 @commands.is_owner()
 async def server(ctx):
+    embed = discord.Embed(title='Servers')
     for guild in client.guilds:
-        print(str(guild.name))
+        await embed.add_field(name='A nice server', value=guild)
 
 # Kick Command
 
 @commands.has_permissions(kick_members=True)
 @client.command()
-async def kick(ctx, user: discord.Member, *, reason='Keine Reason'):
+async def kick(ctx, user: discord.Member, *, reason='No reason'):
     await user.kick(reason=reason)
-    print(f'{ctx.author} hat {user.name} gekickt!')
+    print(f'{ctx.author} has kicked {user.name}!')
     kick = discord.Embed(title=f':boot: Kicked {user.name}!', description=f'Reason: {reason}\nBy: {ctx.author.mention}')
     await ctx.message.delete()
     await ctx.channel.send(embed=kick)
@@ -240,7 +217,7 @@ async def kick(ctx, user: discord.Member, *, reason='Keine Reason'):
 @client.command()
 async def ban(ctx, user: discord.Member, *, reason='Keine Reason'):
     await user.ban(reason=reason)
-    print(f'{ctx.author} hat {user.name} gebannt!')
+    print(f'{ctx.author} has banned {user.name}!')
     ban = discord.Embed(title=f':boot: Banned {user.name}!', description=f'Reason: {reason}\nBy: {ctx.author.mention}')
     await ctx.message.delete()
     await ctx.channel.send(embed=ban)
@@ -250,55 +227,47 @@ async def ban(ctx, user: discord.Member, *, reason='Keine Reason'):
 
 @client.command()
 async def test(ctx):
-    await ctx.channel.send('Test erfolgreich!')
-    print(str(ctx.author) + ' hat Test durchgeführt')
+    await ctx.channel.send('Test successful!')
 
 # Sends the user name of the ctx.author
 
 @client.command()
 async def username(ctx):
     await ctx.channel.send(str(ctx.author))
-    print(str(ctx.author) + ' hat Username-Befehl ausgeführt')
 
 # Say command with arg 'message' as string
 
 @client.command()
 async def say(ctx, *, message: str = None):
     if message is not None:
-        await ctx.channel.send('Nachricht:', value=message)
         embed = discord.Embed(title=f'{ctx.author.name}`s message', color=0x010101)
         embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.add_field(name='Nachricht:', value=message)
-        await ctx.message.delete()
+        embed.add_field(name='Message:', value=message)
         await ctx.channel.send(embed=embed)
 
     else:
         await ctx.message.delete()
-        await ctx.channel.send(f'> {ctx.author.mention} bitte gib eine gültige Nachricht ein!')
+        await ctx.channel.send(f'> {ctx.author.mention} please enter a valid message!')
 
 # Open Source Command with link to this repo
 
 @client.command()
 async def opensource(ctx):
     await ctx.channel.send('Open Source (GitHub): https://github.com/NiklasWyld/ImmerzockBot')
-    print(str(ctx.author) + ' hat Opensource-Befehl ausgeführt')
 
 # Contact Command with email by questions or bugs
 
 @client.command()
 async def email(ctx):
-    await ctx.channel.send('Unter dieser Email könnt ihr mir Fragen und Anliegen schreiben:\r\n'
+    await ctx.channel.send('You can send me questions and concerns to this email:\r\n'
                            'immerzock.management@gmail.com\r\n'
-                           '**SPAM WIRD BLOCKIERT**')
-    print(str(ctx.author) + ' hat Email-Befehl ausgeführt')
+                           '**SPAM WILL BE BLOCKED**')
 
-# Get id of bot for the owner
+# Get id of bot and send it
 
 @client.command()
 async def getid(ctx):
-    await ctx.channel.send(f'{ctx.author.mention} das wird nur den Owner angezeigt', delete_after=5)
-    print(f'ID: {client.user}')
-    print(f'{ctx.author} hat GetID-Befehl ausgeführt')
+    await ctx.channel.send(f'Heres the id of me: {client.user.id}')
 
 # Part of verify command (only owner / one use)
 
@@ -306,7 +275,7 @@ async def getid(ctx):
 @commands.is_owner()
 async def botverify(ctx):
     await ctx.channel.send(
-        'Gib **$Verifizierung** in den Chat ein, und befolge die folgenden Anweisungen um Zugriff auf den Server zu erhalten!'
+        'Enter **$verification** in the chat and follow the instructions below to get access to the server!'
     )
 
 # Gamemode
@@ -315,43 +284,40 @@ async def botverify(ctx):
 @client.command()
 async def gamemode(ctx, *, gm):
     if not gm:
-        await csend.send('Welchen Gamemode willst du? **1** - **0**')
+        await ctx.send('Which game mode do you want? **1** - **0**')
     elif gm == '1':
-        await csend.send('Gamemode was successfully changed to 1!')
-        print(str(message.author) + ' hat Gamemode-Befehl ausgeführt')
+        await ctx.send('Gamemode was successfully changed to 1!')
     elif gm == '0'
-        await csend.send('Gamemode was successfully changed to 0!')
-        print(str(message.author) + ' hat Gamemode-Befehl ausgeführt')
+        await ctx.send('Gamemode was successfully changed to 0!')
 
 # Commands with discord.Embed
 
 @client.command()
 async def userinfo(ctx, member: discord.Member = None):
     member = member if member else ctx.author
-    embed = discord.Embed(title=f'Userinfo für {member.display_name}',
-                          description=f'Dies ist eine Userinfo für den Member {member.mention}',
+    embed = discord.Embed(title=f'Userinfo for {member.display_name}',
+                          description=f'This is a user info for the member {member.mention}',
                           color=0x22a7f0)
-    embed.add_field(name='Server beigetreten', value=member.joined_at.strftime('%d/%m/%Y, %H:%M:%S'),
+    embed.add_field(name='Server joined', value=member.joined_at.strftime('%d/%m/%Y, %H:%M:%S'),
                     inline=True)
-    embed.add_field(name='Discord beigetreten', value=member.created_at.strftime('%d/%m/%Y, %H:%M:%S'),
+    embed.add_field(name='Discord joined', value=member.created_at.strftime('%d/%m/%Y, %H:%M:%S'),
                     inline=True)
     rollen = ''
     for role in member.roles:
         if not role.is_default():
             rollen += '{} \r\n'.format(role.mention)
     if rollen:
-        embed.add_field(name='Rollen', value=rollen, inline=True)
+        embed.add_field(name='Roles', value=rollen, inline=True)
     embed.set_thumbnail(url=member.avatar_url)
-    embed.set_footer(text='Das ist die Userinfo!')
+    embed.set_footer(text='Thats an great userinfo')
     mess = await ctx.channel.send(embed=embed)
     await mess.add_reaction('👌')
-    print(str(ctx.author) + ' hat Userinfo-Befehl ausgeführt')
 
 # Clear command
 
 @client.command()
 async def clear(ctx):
-    embed = discord.Embed(title=f'{str(limit)} Nachrichten wurden gelöscht von {ctx.author}!', colour=discord.Colour.magenta())
+    embed = discord.Embed(title=f'{str(limit)} Messages were deleted by {ctx.author}!', colour=discord.Colour.magenta())
     if not ctx.author.permissions_in(ctx.channel).manage_messages:
         await ctx.respond(embed=self.no_perms, delete_after=10)
     elif ctx.author.permissions_in(ctx.channel).manage_messages:
@@ -363,16 +329,14 @@ async def clear(ctx):
 @client.command()
 @commands.is_owner()
 async def shutdown(ctx):
-    await ctx.channel.send('Bot wird heruntergefahren...\r\n'
-                           'Das kann einige Minuten beanspruchen...')
+    print('Bot will shutdown')
     await client.close()
-    print(str(ctx.author) + ' hat Bot beendet')
 
 # On Ready method
 
 @client.event
 async def on_ready():
-    print(f'Status: Online als {client.user}!')
+    print(f'Status: Online as {client.user}!')
     client.loop.create_task(status_task())
 
 # status_task() method to change status every 10 seconds
