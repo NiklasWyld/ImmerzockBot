@@ -349,6 +349,6 @@ async def status_task():
         await asyncio.sleep(10)
 
 # Start Bot (client) 
-# 'TOKEN' is only a example and not defined
+# 'TOKEN' is only an example and not defined
 
 client.run(TOKEN)
