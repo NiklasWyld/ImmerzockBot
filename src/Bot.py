@@ -193,7 +193,6 @@ async def invite(ctx):
 # Outputs the servers on which the bot is
 
 @client.command()
-@commands.is_owner()
 async def server(ctx):
     embed = discord.Embed(title='Servers')
     for guild in client.guilds:
